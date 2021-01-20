@@ -3,7 +3,6 @@ import { ProcessingManager, VideoPlayer } from 'react-native-video-processing';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 
-
 const VIDEO_OPTIONS_BASE = {
   mediaType: 'video',
   durationLimit: 120,
@@ -28,16 +27,70 @@ const RESIZE_OPTIONS = {
   }
 };
 
-const getVideoInfo = async (source) =>  {
+export const getVideoInfo = async (source) =>  {
   let output = null;
   output = await ProcessingManager.getVideoInfo(source);
   return output;
 }
 
-const getFileSizeByUri = async (uri) => {
+export const getFileSizeByUri = async (uri) => {
   const resultUri = Platform.OS === 'android' ? uri : uri.replace('file://', '');
   const result = await RNFetchBlob.fs.stat(resultUri);
   return Number(result.size);
+}
+
+export const compressVideo = (uri) => {
+  return new Promise(async (resolve) => {
+    const output = {
+        uri: null,
+        path: null,
+        error: null,
+        cancelled: false,
+        extension: '.mp4',
+        mime: 'video/mp4',
+        type: 'VIDEO'
+    };
+  
+    const videoOptions = {
+        ...VIDEO_OPTIONS_BASE,
+        title: 'Select video',
+        takePhotoButtonTitle: 'Take a video',
+        chooseFromLibraryButtonTitle: 'Choose from Library'
+    };
+  
+    output.uri = uri;
+    const videoInfo = await getVideoInfo(output.uri);
+    if (!videoInfo) {
+        output.error = 'Something was wrong';
+        return resolve(output);
+    }
+
+    if (videoInfo.duration >= 121) {
+        output.error = 'The maximum duration for a video is 1 minute';
+        return resolve(output);
+    }
+
+    const isVertical = videoInfo.size.height > videoInfo.size.width;
+
+    if ((isVertical && videoInfo.size.width > 720) || (!isVertical && videoInfo.size.height > 720)) {
+        try {
+            output.uri = await ProcessingManager.compress(
+              output.uri,
+              RESIZE_OPTIONS[isVertical ? 'vertical' : 'horizontal']
+            );
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const fileSize = output.uri && await getFileSizeByUri(output.uri);
+    // Filesize is measured in bytes
+    if (fileSize && fileSize >= Number(250 * 2 ** 20)) {
+        output.error = 'The maximum video file size is 250mb';
+        return resolve(output);
+    }
+    return resolve(output);
+  });
 }
 
 export const selectVideo = () => {

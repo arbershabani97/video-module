@@ -36,6 +36,7 @@
 		C99EAD8325AF40A6008C0518 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C99EAD8225AF40A6008C0518 /* MobileCoreServices.framework */; };
 		C99EAD8425AF40B2008C0518 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C99EAD7225AF3FED008C0518 /* GPUImage.framework */; };
 		C99EAD8525AF40B2008C0518 /* GPUImage.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C99EAD7225AF3FED008C0518 /* GPUImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C9D945DD25B72E9000D94BB6 /* libRNVideoEditor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D945DA25B72E7600D94BB6 /* libRNVideoEditor.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = BCE209E51943F20C002FEED8;
 			remoteInfo = GPUImageFramework;
+		};
+		C9D945D925B72E7600D94BB6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C9D945D225B72E7600D94BB6 /* RNVideoEditor.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNVideoEditor;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -133,6 +141,7 @@
 		C99EAD7E25AF4084008C0518 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C99EAD8025AF4094008C0518 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		C99EAD8225AF40A6008C0518 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		C9D945D225B72E7600D94BB6 /* RNVideoEditor.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNVideoEditor.xcodeproj; path = "../node_modules/react-native-video-editor/ios/RNVideoEditor.xcodeproj"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -150,6 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9D945DD25B72E9000D94BB6 /* libRNVideoEditor.a in Frameworks */,
 				C99EAD7925AF404E008C0518 /* CoreMedia.framework in Frameworks */,
 				C99EAD8325AF40A6008C0518 /* MobileCoreServices.framework in Frameworks */,
 				367E9C807C392E402815BC99 /* libPods-videomodule.a in Frameworks */,
@@ -232,6 +242,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				C9D945D225B72E7600D94BB6 /* RNVideoEditor.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -328,6 +339,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C9D945D325B72E7600D94BB6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C9D945DA25B72E7600D94BB6 /* libRNVideoEditor.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -407,6 +426,10 @@
 					ProductGroup = C99EAD6A25AF3FED008C0518 /* Products */;
 					ProjectRef = C99EAD6925AF3FED008C0518 /* GPUImage.xcodeproj */;
 				},
+				{
+					ProductGroup = C9D945D325B72E7600D94BB6 /* Products */;
+					ProjectRef = C9D945D225B72E7600D94BB6 /* RNVideoEditor.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -429,6 +452,13 @@
 			fileType = wrapper.framework;
 			path = GPUImage.framework;
 			remoteRef = C99EAD7125AF3FED008C0518 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C9D945DA25B72E7600D94BB6 /* libRNVideoEditor.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNVideoEditor.a;
+			remoteRef = C9D945D925B72E7600D94BB6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
