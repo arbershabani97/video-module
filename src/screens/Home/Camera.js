@@ -5,8 +5,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import RNVideoEditor from 'react-native-video-editor';
 import { routes } from '../../navigation';
 import navigationService from '../../navigation/navigation-service';
-import { selectVideo, getFileSizeByUri, getVideoInfo, compressVideo } from '../../services';
-import { ProcessingManager } from 'react-native-video-processing';
+import { getFileSizeByUri, getVideoInfo, compressVideo } from '../../services';
+import { LogLevel, RNFFmpeg } from 'react-native-ffmpeg';
 
 const CAMERA_OPTIONS_BASE = {
   quality: RNCamera.Constants.VideoQuality['720p'],
@@ -27,36 +27,52 @@ export const Camera = () => {
   const camera = useRef(null);
 
   useEffect(() => {
-    if (!isRecording && recordData.length > 0 && isRecodingFinished ) {
-      recordData.map(async (item) => {
-        const videoInfo = await getVideoInfo(item.uri);
-        console.log(videoInfo)
-      });
-      const videos = recordData.map((item) => {
-        return item.uri
-      });
-      try {
-        RNVideoEditor.merge(
-          videos,
-          (results) => {
-            console.log(results);
-          },
-          async (results, file) => {
-            const videoInfo = await getVideoInfo(file);
-            if (file && videoInfo && videoInfo.duration > 0) {
-              navigationService.navigate(routes.preview.routeName, {video: file})
-              setRecordData([])
+
+    const getVideos = async () => {
+      if (!isRecording && recordData.length > 0 && isRecodingFinished ) {
+        const videos = recordData.map((item, index) => item.uri );
+        try {
+          let flippedVideos = []
+          for (let i = 0; i < videos.length; i++) {
+            const outputUri = videos[i].slice(0, videos[i].length - 4) + '_output.mov';
+            if (i % 2 === 0){
+              await RNFFmpeg.execute(`-i ${videos[i]} -preset ultrafast ${outputUri}`).then((result) => {
+                console.log(`FFmpeg process exited with rc=${result}.`);
+              });
             }
+            else {
+              await RNFFmpeg.execute(`-i ${videos[i]} -vf hflip -preset ultrafast ${outputUri}`).then((result) => {
+                console.log(`FFmpeg process exited with rc=${result}.`);
+              });
+            }
+            flippedVideos.push(outputUri)
           }
-        );
-      } catch (error) {
-        console.log(error)
+          if (flippedVideos.length === videos.length) {
+            RNVideoEditor.merge(
+              flippedVideos,
+              (results) => {
+                console.log(results);
+              },
+              async (results, file) => {
+                const videoInfo = await getVideoInfo(file);
+                const videoSize = await getFileSizeByUri(file);
+                if (file && videoInfo && videoInfo.duration > 0) {
+                  navigationService.navigate(routes.preview.routeName, {video: file})
+                  setRecordData([])
+                }
+              }
+            );
+          }
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
+    getVideos();
   }, [recordData, isRecording, isRecodingFinished])
 
   useEffect(() => {
-    if (cameraType === RNCamera.Constants.Type.front) setCameraOptions({...CAMERA_OPTIONS_BASE, mirrorVideo: false})
+    if (cameraType === RNCamera.Constants.Type.front) setCameraOptions({...CAMERA_OPTIONS_BASE, mirrorVideo: true})
     else setCameraOptions(CAMERA_OPTIONS_BASE)
   }, [cameraType])
 
@@ -65,11 +81,11 @@ export const Camera = () => {
       setIsRecording(true);
       setIsRecordingFinished(false);
       const data = await camera.current.recordAsync(cameraOptions);
-      setIsRecordingFinished(true);
       setRecordData([...recordData, data])
+      setIsRecordingFinished(true);
     } else {
       if (camera) {
-        camera.current.stopRecording()
+        await camera.current.stopRecording()
       }
       setIsRecording(false);
     }
@@ -88,8 +104,8 @@ export const Camera = () => {
       try {
         setIsRecordingFinished(false);
         const data = await camera.current.recordAsync(cameraOptions);
-        setIsRecordingFinished(true);
         setRecordData([...recordData, data])
+        setIsRecordingFinished(true);
       } catch (error) {
         console.log(error)
       }
